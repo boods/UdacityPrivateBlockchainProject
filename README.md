@@ -28,5 +28,5 @@ The screen shots below illustrate successful execution of the private block chai
 8. Get the block using it's hash
 ![GET block/hash/{hash}](images/8_GET_block_hash.jpg)
 
-9. Get the block using it's hash
+9. Get validateChain, to force validation and return the result
 ![GET validateChain](images/9_validateChain.jpg)
