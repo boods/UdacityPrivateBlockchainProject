@@ -43,8 +43,8 @@ class Block {
             self.hash = null;
                                             
             // Recalculate the hash of the Block
-            let validationHash = SHA256.SHA256( JSON.stringify(self) ).toString();
-
+            let validationHash = SHA256( JSON.stringify(self) ).toString();
+            
             self.hash = currentHash; // restore the original hash
 
             // Comparing if the hashes changed
@@ -68,7 +68,7 @@ class Block {
         // Decoding the data to retrieve the JSON representation of the object
         let bodyAsJsonString = hex2ascii(this.body);
 
-        const UNAVAILABLE_BLOCK = { data: { address: {}, star: {} } };
+        const UNAVAILABLE_BLOCK = { data: { owner: {}, star: {} } };
 
         // Parse the data to an object to be retrieved.
         try {

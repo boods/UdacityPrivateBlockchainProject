@@ -1,0 +1,39 @@
+Get the genesis block
+curl http://172.24.196.116:8000/block/height/0
+Example Output: 
+{
+    "hash":"510d170bbbbaebf1478d6148bfca236d84f96c89d38c486a483f0dae6536e38d",
+    "height":0,
+    "body":"7b2264617461223a2247656e6573697320426c6f636b227d",
+    "time":"1616221639",
+    "previousBlockHash":null
+}
+
+curl \
+    --header "Content-Type: application/json" \
+    --request POST \
+    --data '{"address":"12bukEThB8RcG2Z1wPQ7LFneLtobL3fQgL"}' \
+    http://172.24.196.116:8000/requestValidation/
+
+Example Output: 
+12bukEThB8RcG2Z1wPQ7LFneLtobL3fQgL:1616230982:starRegistry
+"12bukEThB8RcG2Z1wPQ7LFneLtobL3fQgL:1616361461:starRegistry"
+Get a signature from Electrum (or bitcoin core - but can't be testnet)
+
+curl \
+    --header "Content-Type: application/json" \
+    --request POST \
+    --data '{ "address":"12bukEThB8RcG2Z1wPQ7LFneLtobL3fQgL", "message": "12bukEThB8RcG2Z1wPQ7LFneLtobL3fQgL:1616361461:starRegistry", "signature": "H0B0pZ+d2pb60y0lZSZoV5kWfVzs08N6mBQqOTValqBGPU2WTeOEFAAWnchNYXlj0k0MLpVs1nEGvtgoHVkKPj0=", "star": { "dec": "68° 52'' 56.9", "ra": "16h 29m 1.0s", "story": "Testing the story 4" } }' \
+    http://172.24.196.116:8000/submitstar/
+
+Exmaple Output:     
+{"hash":"f13bce30941f8c02a0e98938a9bbb182ed2fd340c6c3258bd009db977a51f0c0","height":4,"body":"22313262756b4554684238526347325a31775051374c466e654c746f624c336651674c3a313631363233303938323a73746172526567697374727922","time":"1616231433","previousBlockHash":"05dce387d60befb7385fa78d530048c0cbcf2f279e9d81edc10d870b821aad07"}
+
+Get Blocks with Address
+curl http://172.24.196.116:8000/blocks/12bukEThB8RcG2Z1wPQ7LFneLtobL3fQgL
+
+Get Block with Height
+curl http://172.24.196.116:8000/block/height/1
+
+Get Block with Hash
+curl http://172.24.196.116:8000/block/hash/3b4558803b52f66cfb3f4cac93c6044769771490a7cbf32665080e885125cc3a

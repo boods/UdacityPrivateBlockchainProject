@@ -65,6 +65,7 @@ class Blockchain {
         let self = this;
         return new Promise(async (resolve, reject) => {
             try {
+
                 block.height = this.chain.length;
                 block.time = new Date().getTime().toString().slice(0,-3);
                 if (this.chain.length > 0)
@@ -73,7 +74,20 @@ class Blockchain {
                 }
                 block.hash = SHA256(JSON.stringify(block)).toString();
                 this.chain.push(block);                
+
+                const errorsInChain = await this.validateChain();
+                if (errorsInChain.length > 0)
+                {
+                    // unwind the block addition
+                    this.chain.pop();
+
+                    // And reject
+                    reject(errorsInChain.toString());
+                    return;
+                }
+
                 resolve(block);     
+
             } catch (e) {
                 reject(e.message);
             }
@@ -157,7 +171,7 @@ class Blockchain {
                 return;
             }
 
-            let block = new BlockClass.Block( { data: { address: address, star: star } } );
+            let block = new BlockClass.Block( { data: { owner: address, star: star } } );
             self._addBlock( block )
                 .then( (addedBlock) => { resolve(addedBlock); } )
                 .catch( (message) => { reject(message); } );            
@@ -173,20 +187,15 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this;
         return new Promise((resolve, reject) => {
-            let matchingBlocks = self.chain.filter(block => block.hash === hash);
-            if ( matchingBlocks.length === 0)
+            self.chain.find(block => block.hash === hash);
+            let matchingBlock = self.chain.filter(block => block.hash === hash);
+            if ( matchingBlock === undefined)
             {
                 reject("Hash not found");
                 return;
             }
 
-            if ( matchingBlocks > 1 )
-            {
-                reject("Hash not found");
-                return;
-            }
-
-            resolve(matchingBlocks[0]);
+            resolve(matchingBlock);
         });
     }
 
@@ -229,9 +238,9 @@ class Blockchain {
 
             self.chain.forEach(block => {
                 let blockData = block.getBData();
-                if ( blockData.data.address === address )
+                if ( blockData.data.owner === address )
                 {
-                    stars.push(blockData.data.star);
+                    stars.push(blockData.data);
                 }
             });            
             resolve( stars );
@@ -246,11 +255,13 @@ class Blockchain {
      */
     validateChain() {
         let self = this;
-        let errorLog = [];
         return new Promise(async (resolve, reject) => {
+            let errorLog = [];
             let previousBlockHash = "";
-            self.chain.forEach(block => {
-                if ( !block.validate() )
+            for (const block of self.chain)
+            {
+                const validBlock = await block.validate();
+                if ( !validBlock )
                 {
                     errorLog.push( { Hash: block.hash, Error: "Invalid block" } );
                 }
@@ -267,7 +278,7 @@ class Blockchain {
                     }
                 }
                 previousBlockHash = block.hash;
-            });
+            };
 
             resolve(errorLog);
         });
